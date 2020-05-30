@@ -1,0 +1,14 @@
+1、向目标网站发起HTTPRequest,requests,urllib,selenium,获得响应
+2 、获得的内容：html（页面解析）、json(json解析)、二进制（bit保存）
+3、数据保存
+
+全站爬取：多线程爬取  	框架：Scrapy  并发处理请求
+
+pip install Scrapy
+
+scrapy  startproject projectname  创建项目
+scrapy genspider spidername domainname  创建项目
+scrapy crawl spidername 运行爬虫
+scrapy crawl spidername --o file.json 保存结果至json文件
+
+爬虫文件要放在Spider文件目录下
