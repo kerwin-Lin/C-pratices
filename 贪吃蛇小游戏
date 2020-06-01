@@ -1,0 +1,168 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<graphics.h>//initgaphic()
+#include<time.h>//srand((unsigned int)time(NULL)),rand()
+#include<conio.h>//_getch()
+#include<opencv2/opencv.hpp>
+using namespace cv;
+#define SIZE 10 //蛇的大小
+#define N 100
+
+enum direct {
+	up = 72,down = 80,left = 75,right = 77
+};//对应键盘的上下左右ASII码键值
+struct Coor
+{//坐标
+	int x;
+	int y;
+};
+
+struct Snake
+{
+	struct Coor coor[N];
+	int n;
+	direct fx;//蛇头朝向
+}snake;
+
+struct Food {
+	struct Coor fcoor;
+	bool EatFlag;//食物是否被吃了
+}food;
+
+void GameInit() {
+
+	initgraph(640, 480);
+	srand((unsigned int)time(NULL));//随机数种子
+
+	snake.n = 5;
+	snake.fx = right;
+	snake.coor[0].x = 100;
+	snake.coor[0].y = 100;
+	snake.coor[1].x = 90;
+	snake.coor[1].y = 100;
+	snake.coor[2].x = 80;
+	snake.coor[2].y = 100;
+	snake.coor[3].x = 70;
+	snake.coor[3].y = 100;
+	snake.coor[4].x = 60;
+	snake.coor[4].y = 100;
+
+	food.EatFlag = TRUE;
+
+};
+void DrawnSnake() {
+
+	system("cls");//清屏
+	cleardevice();//刷新屏幕
+
+	for (int i = 0; i < snake.n; i++) {
+		setfillcolor(RGB(rand() % 256,rand() % 256, rand() % 256));
+		fillcircle(snake.coor[i].x, snake.coor[i].y,5);
+	}
+};
+void SnakeMove() {
+	for (int i = snake.n-1; i >0; i--) {
+		snake.coor[i].x = snake.coor[i - 1].x;
+		snake.coor[i].y = snake.coor[i - 1].y;
+	}
+	switch(snake.fx) {
+	case up:snake.coor[0].y -= SIZE; break;
+	case down:snake.coor[0].y += SIZE; break;
+	case left:snake.coor[0].x -= SIZE; break;
+	case right:snake.coor[0].x += SIZE; break;
+
+	}
+};
+void ChangeFX() {
+	char key;
+	key = _getch();
+	switch (key) {
+	case up:
+		if (snake.fx != down)
+			snake.fx = up;
+		break;
+	case down:
+		if (snake.fx != up)
+			snake.fx = down;
+		break;
+	case left:
+		if (snake.fx != right)
+			snake.fx = left;
+		break;
+	case right:
+		if (snake.fx != left)
+			snake.fx = right;
+		break;
+	};
+}
+
+void CreateFood() {
+	while (food.EatFlag) {
+		int flag = 0;
+		food.fcoor.x = rand() % 64 * 10;
+		food.fcoor.y = rand() % 48 * 10;
+
+		for (int i = 0; i < snake.n; i++) {
+			if (food.fcoor.x == snake.coor[i].x && food.fcoor.y == snake.coor[i].y) {
+				flag = 1;
+				break;
+			}
+		}
+		if (flag)
+			continue;
+		else
+		{
+			food.EatFlag = FALSE;
+			break;
+		}
+	}
+}
+void DrawnFood() {
+	setfillcolor(RGB(rand()%256, rand() % 256, rand() % 256));
+	fillcircle(food.fcoor.x, food.fcoor.y, 5);
+}
+
+void EatFood() {
+	if (food.fcoor.x == snake.coor[0].x&&food.fcoor.y == snake.coor[0].y) {
+		snake.n += 1;
+		food.EatFlag = TRUE;
+		
+	}
+}
+int GameOver() {
+	int flag = 0;
+	if (snake.coor[0].x < 0 || snake.coor[0].y < 0 ||
+		snake.coor[0].x>640 || snake.coor[0].y>480)
+		flag = 1;
+	else {
+		for (int i = 1; i < snake.n; i++) {
+			printf("%d,%d,%d,%d",snake.coor[0].x, snake.coor[i].x, snake.coor[0].y, snake.coor[i].y);
+			if (snake.coor[0].x == snake.coor[i].x &&
+				snake.coor[0].y == snake.coor[i].y)
+				flag=1;
+			else
+				continue;
+		}
+	}
+	return flag;
+}
+int main()
+{
+	GameInit();
+	while (1) {
+	
+		if (!_kbhit())//监控键盘是否有输入
+		{
+			SnakeMove();
+			DrawnSnake();
+			CreateFood();
+			DrawnFood();
+			EatFood();
+			Sleep(100);//
+			if (GameOver())
+				break;
+		}
+		else
+			ChangeFX();
+	}
+}
