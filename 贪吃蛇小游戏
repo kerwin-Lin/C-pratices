@@ -99,10 +99,10 @@ void ChangeFX() {
 void CreateFood() {
 	while (food.EatFlag) {
 		int flag = 0;
-		food.fcoor.x = rand() % 64 * 10;
+		food.fcoor.x = rand() % 64 * 10;//食物要出现在蛇的路径（0,10,20,30.......630）上
 		food.fcoor.y = rand() % 48 * 10;
 
-		for (int i = 0; i < snake.n; i++) {
+		for (int i = 0; i < snake.n; i++) {//蛇头不能撞在蛇的身上
 			if (food.fcoor.x == snake.coor[i].x && food.fcoor.y == snake.coor[i].y) {
 				flag = 1;
 				break;
